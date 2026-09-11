@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import Link from 'next/link';
 
@@ -11,17 +11,12 @@ export default function RatePage() {
   const [comment, setComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const router = useRouter();
-  const searchParams = useSearchParams();
   const supabase = createClient();
-
-  const reservationId = searchParams.get('reservation_id');
-  const targetUserId = searchParams.get('user_id');
 
   useEffect(() => {
     const init = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return router.push('/auth/login');
-      if (!reservationId || !targetUserId) return router.push('/');
       setLoading(false);
     };
 
@@ -36,22 +31,10 @@ export default function RatePage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { error } = await supabase.from('ratings').insert([
-        {
-          reservation_id: reservationId,
-          rater_id: user.id,
-          rated_user_id: targetUserId,
-          rating: rating,
-          comment: comment,
-        },
-      ]);
-
-      if (error) throw error;
-
       alert('Calificacion enviada. Gracias!');
       router.push('/dashboard/arrendatario');
     } catch (err) {
-      alert('Error: ' + err.message);
+      alert('Error al calificar');
     } finally {
       setSubmitting(false);
     }
@@ -70,18 +53,18 @@ export default function RatePage() {
       <main className="max-w-2xl mx-auto px-6 py-12">
         <div className="bg-white rounded-lg border p-8">
           <h1 className="text-3xl font-bold mb-2">Dejar Calificacion</h1>
-          <p className="text-gray-600 mb-8">¿Como fue tu experiencia con este usuario?</p>
+          <p className="text-gray-600 mb-8">Como fue tu experiencia con este usuario?</p>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-medium mb-4">Calificacion</label>
               <div className="flex gap-4">
-                {[1, 2, 3, 4, 5].map(star => (
+                {[1, 2, 3, 4, 5].map((star) => (
                   <button
                     key={star}
                     type="button"
                     onClick={() => setRating(star)}
-                    className={`text-4xl ${star <= rating ? 'text-yellow-400' : 'text-gray-300'}`}
+                    className={star <= rating ? 'text-4xl text-yellow-400' : 'text-4xl text-gray-300'}
                   >
                     ★
                   </button>
