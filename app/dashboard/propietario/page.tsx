@@ -23,7 +23,6 @@ export default function OwnerDashboard() {
           return;
         }
 
-        // Obtener datos del usuario
         const { data: userData } = await supabase
           .from('users')
           .select('*')
@@ -32,13 +31,11 @@ export default function OwnerDashboard() {
 
         setUser(userData);
 
-        // Verificar que sea propietario
         if (userData?.role !== 'propietario') {
           router.push('/');
           return;
         }
 
-        // Obtener vehículos del propietario
         const { data: vehiclesData } = await supabase
           .from('vehicles')
           .select('*')
@@ -67,9 +64,15 @@ export default function OwnerDashboard() {
     );
   }
 
+  const handleDelete = async (vehicleId: string) => {
+    if (confirm('¿Estás seguro de que quieres eliminar este vehículo?')) {
+      await supabase.from('vehicles').delete().eq('id', vehicleId);
+      setVehicles(vehicles.filter(v => v.id !== vehicleId));
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-900">Mi Dashboard</h1>
@@ -85,9 +88,7 @@ export default function OwnerDashboard() {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-12">
-        {/* Stats */}
         <div className="grid grid-cols-3 gap-6 mb-12">
           <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
             <p className="text-gray-600 text-sm font-medium mb-2">Vehículos Activos</p>
@@ -96,15 +97,13 @@ export default function OwnerDashboard() {
           <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
             <p className="text-gray-600 text-sm font-medium mb-2">Ganancias Este Mes</p>
             <p className="text-4xl font-bold text-green-600">0 Gs</p>
-            <p className="text-xs text-gray-500 mt-2">(Sin reservas aún)</p>
           </div>
           <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
             <p className="text-gray-600 text-sm font-medium mb-2">Rating</p>
-            <p className="text-4xl font-bold text-yellow-600">{user?.average_rating ? user.average_rating.toFixed(1) : 'N/A'}</p>
+            <p className="text-4xl font-bold text-yellow-600">{user?.average_rating || 'N/A'}</p>
           </div>
         </div>
 
-        {/* Vehicles Section */}
         <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
           <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
             <h2 className="text-xl font-bold text-gray-900">Mis Vehículos</h2>
@@ -112,13 +111,12 @@ export default function OwnerDashboard() {
               href="/dashboard/propietario/nuevo"
               className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition font-medium"
             >
-              + Publicar Vehículo
+              + Publicar
             </Link>
           </div>
 
           {vehicles.length === 0 ? (
             <div className="p-12 text-center">
-              <div className="text-5xl mb-4">🚗</div>
               <p className="text-gray-600 text-lg mb-4">No tienes vehículos publicados</p>
               <Link
                 href="/dashboard/propietario/nuevo"
@@ -136,32 +134,20 @@ export default function OwnerDashboard() {
                       {vehicle.brand} {vehicle.model}
                     </h3>
                     <div className="mt-2 flex gap-4 text-sm text-gray-600">
-                      <span>📅 Año: {vehicle.year}</span>
-                      <span>📍 Ubicación: {vehicle.city}</span>
-                      <span>💰 {vehicle.daily_price.toLocaleString()} Gs/día</span>
+                      <span>Año: {vehicle.year}</span>
+                      <span>Ciudad: {vehicle.city}</span>
+                      <span>Precio: {vehicle.daily_price} Gs/día</span>
                     </div>
                     <div className="mt-3">
-                      <span className={inline-block px-3 py-1 rounded-full text-xs font-medium }>
-                        {vehicle.status === 'disponible' ? '✓ Disponible' : vehicle.status === 'alquilado' ? '🔒 Alquilado' : '⚙️ Mantenimiento'}
+                      <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        Disponible
                       </span>
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <Link
-                      href={\/dashboard/propietario/\/editar\}
-                      className="px-4 py-2 bg-gray-200 text-gray-900 rounded-lg hover:bg-gray-300 transition text-sm font-medium"
-                    >
-                      Editar
-                    </Link>
                     <button
+                      onClick={() => handleDelete(vehicle.id)}
                       className="px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition text-sm font-medium"
-                      onClick={() => {
-                        if (confirm('¿Estás seguro de que quieres eliminar este vehículo?')) {
-                          supabase.from('vehicles').delete().eq('id', vehicle.id).then(() => {
-                            setVehicles(vehicles.filter(v => v.id !== vehicle.id));
-                          });
-                        }
-                      }}
                     >
                       Eliminar
                     </button>
