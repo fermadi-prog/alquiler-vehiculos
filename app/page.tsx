@@ -1,9 +1,8 @@
-import Link from 'next/link';
+﻿import Link from 'next/link';
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Header */}
       <header className="bg-white shadow">
         <div className="max-w-6xl mx-auto px-4 py-6 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-blue-600">🚗 Alquiler Vehículos</h1>
@@ -18,7 +17,6 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Hero */}
       <main className="max-w-6xl mx-auto px-4 py-20">
         <div className="text-center">
           <h2 className="text-5xl font-bold text-gray-900 mb-6">
@@ -44,7 +42,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Features */}
         <div className="grid grid-cols-3 gap-8 mt-20">
           <div className="bg-white p-6 rounded-lg shadow">
             <div className="text-4xl mb-4">🔒</div>
