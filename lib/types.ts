@@ -8,6 +8,8 @@ export interface User {
   email: string;
   full_name: string | null;
   role: UserRole;
+  average_rating?: number;
+  total_trips?: number;
 }
 
 export interface Vehicle {
@@ -23,6 +25,12 @@ export interface Vehicle {
   address: string;
   status: VehicleStatus;
   is_verified: boolean;
+  color?: string;
+  fuel_type?: string;
+  transmission?: string;
+  seats?: number;
+  mileage?: number;
+  description?: string;
 }
 
 export interface Reservation {
@@ -50,5 +58,5 @@ export interface VehicleFormData {
   city: string;
   address: string;
   description: string;
-  features: string[];
+  features?: string[];
 }
