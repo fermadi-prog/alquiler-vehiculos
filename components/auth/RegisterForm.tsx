@@ -3,14 +3,12 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
-import { UserRole } from '@/lib/types';
 
 export default function RegisterForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [fullName, setFullName] = useState('');
-  const [role, setRole] = useState<UserRole>('arrendatario');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
@@ -30,26 +28,17 @@ export default function RegisterForm() {
         throw new Error('La contraseña debe tener al menos 8 caracteres');
       }
 
-      const { data: { user }, error: signUpError } = await supabase.auth.signUp({
+      const { error: signUpError } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            full_name: fullName,
+          }
+        }
       });
 
       if (signUpError) throw signUpError;
-      if (!user) throw new Error('Error al crear usuario');
-
-      const { error: userError } = await supabase
-        .from('users')
-        .insert([
-          {
-            id: user.id,
-            email,
-            full_name: fullName,
-            role,
-          },
-        ]);
-
-      if (userError) throw userError;
 
       router.push('/auth/login?message=Registro exitoso. Por favor inicia sesión.');
     } catch (error: any) {
@@ -107,18 +96,6 @@ export default function RegisterForm() {
           required
           placeholder="Repite tu contraseña"
         />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium mb-1">¿Qué eres?</label>
-        <select
-          value={role}
-          onChange={(e) => setRole(e.target.value as UserRole)}
-          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="arrendatario">Quiero alquilar vehículos</option>
-          <option value="propietario">Quiero publicar mis vehículos</option>
-        </select>
       </div>
 
       {error && <p className="text-red-500 text-sm">{error}</p>}
