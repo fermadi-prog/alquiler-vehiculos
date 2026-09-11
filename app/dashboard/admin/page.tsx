@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
-import { Vehicle, User } from '@/lib/types';
 
 export default function AdminDashboard() {
   const [users, setUsers] = useState([]);
@@ -42,7 +41,7 @@ export default function AdminDashboard() {
         setStats({
           totalUsers: usersData?.length || 0,
           totalVehicles: vehiclesData?.length || 0,
-          verifiedVehicles: vehiclesData?.filter(v => v.is_verified).length || 0,
+          verifiedVehicles: vehiclesData?.filter((v) => v.is_verified).length || 0,
         });
       } catch (err) {
         console.error(err);
@@ -56,13 +55,13 @@ export default function AdminDashboard() {
 
   const handleVerifyVehicle = async (vehicleId) => {
     await supabase.from('vehicles').update({ is_verified: true }).eq('id', vehicleId);
-    setVehicles(vehicles.map(v => v.id === vehicleId ? { ...v, is_verified: true } : v));
+    setVehicles(vehicles.map((v) => (v.id === vehicleId ? { ...v, is_verified: true } : v)));
   };
 
   const handleDeleteVehicle = async (vehicleId) => {
     if (confirm('Estás seguro?')) {
       await supabase.from('vehicles').delete().eq('id', vehicleId);
-      setVehicles(vehicles.filter(v => v.id !== vehicleId));
+      setVehicles(vehicles.filter((v) => v.id !== vehicleId));
     }
   };
 
@@ -143,8 +142,8 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {vehicles.map(vehicle => {
-                  const owner = users.find(u => u.id === vehicle.owner_id);
+                {vehicles.map((vehicle) => {
+                  const owner = users.find((u) => u.id === vehicle.owner_id);
                   return (
                     <tr key={vehicle.id} className="border-b hover:bg-gray-50">
                       <td className="px-6 py-4"><p className="font-medium">{vehicle.brand} {vehicle.model}</p></td>
@@ -184,7 +183,7 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {users.map(user => (
+                {users.map((user) => (
                   <tr key={user.id} className="border-b hover:bg-gray-50">
                     <td className="px-6 py-4 font-medium">{user.full_name || 'Sin nombre'}</td>
                     <td className="px-6 py-4">{user.email}</td>
